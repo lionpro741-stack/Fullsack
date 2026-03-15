@@ -7,7 +7,7 @@ app = FastAPI()
 
 # ✅ Разрешаем GitHub Pages
 origins = [
-    "https://lionpro741-stack.github.io/Fullsack/"  # <- поменяй на свой GitHub Pages
+    "https://lionpro741-stack.github.io"
 ]
 
 app.add_middleware(
