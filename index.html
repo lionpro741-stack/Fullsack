@@ -1,39 +1,21 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<title>💡 Генератор идей</title>
-<style>
-body { font-family: Arial; padding: 20px; background: #1e3c72; color: white; }
-input { padding: 5px; width: 300px; }
-button { padding: 5px 10px; margin-left: 5px; }
-.idea { margin: 5px 0; }
-</style>
-</head>
-<body>
-
-<h1>💡 Генератор идей</h1>
-
-<h2>Случайная идея</h2>
-<div id="randomIdea">Нажми кнопку</div>
-<button onclick="getRandomIdea()">Получить</button>
-
-<h2>Добавить идею</h2>
-<input id="ideaInput" placeholder="Новая идея">
-<button onclick="addIdea()">Добавить</button>
-
-<h2>Все идеи</h2>
-<button onclick="loadIdeas()">Обновить список</button>
-<div id="ideasList"></div>
-
 <script>
-const API = "https://fullsack.onrender.com"; // <- URL Render
+const API = "https://fullsack.onrender.com";
 
 async function loadIdeas(){
     const res = await fetch(API + "/all_ideas");
+
+    if(!res.ok){
+        console.log("Ошибка сервера");
+        return;
+    }
+
     const data = await res.json();
+
     const list = document.getElementById("ideasList");
     list.innerHTML = "";
+
+    if(!data.ideas) return;
+
     data.ideas.forEach(idea => {
         const div = document.createElement("div");
         div.className = "idea";
@@ -45,25 +27,33 @@ async function loadIdeas(){
 async function addIdea(){
     const input = document.getElementById("ideaInput");
     const idea = input.value;
-    if(!idea) { alert("Введите идею!"); return; }
+
+    if(!idea){
+        alert("Введите идею!");
+        return;
+    }
+
     await fetch(API + "/add_idea", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({idea})
     });
+
     input.value = "";
     loadIdeas();
 }
 
 async function getRandomIdea(){
     const res = await fetch(API + "/random_idea");
+
+    if(!res.ok){
+        document.getElementById("randomIdea").innerText = "Ошибка API";
+        return;
+    }
+
     const data = await res.json();
-    document.getElementById("randomIdea").innerText = data.idea;
+    document.getElementById("randomIdea").innerText = data.idea || "Нет идей";
 }
 
-// Загрузка идей при открытии
 window.onload = loadIdeas;
 </script>
-
-</body>
-</html>
